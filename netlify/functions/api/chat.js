@@ -1,8 +1,15 @@
+// netlify/functions/api/chat.js
 const Groq = require("groq-sdk");
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+// Initialize Groq client with error handling
+let groq;
+try {
+  groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY,
+  });
+} catch (error) {
+  console.error("Failed to initialize Groq:", error);
+}
 
 exports.handler = async (event, context) => {
   // Handle CORS
@@ -32,7 +39,31 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { messages } = JSON.parse(event.body);
+    // Check if API key exists
+    if (!process.env.GROQ_API_KEY) {
+      console.error("GROQ_API_KEY is not set");
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Server configuration error: API key missing",
+        }),
+      };
+    }
+
+    // Parse request body
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (parseError) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: "Invalid JSON body" }),
+      };
+    }
+
+    const { messages } = body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return {
@@ -44,6 +75,18 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Check if groq is initialized
+    if (!groq) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Groq client not initialized. Check your API key.",
+        }),
+      };
+    }
+
+    // Call Groq API
     const completion = await groq.chat.completions.create({
       messages: [
         {
@@ -74,12 +117,23 @@ exports.handler = async (event, context) => {
   } catch (error) {
     console.error("Groq API Error:", error);
 
+    // Handle specific errors
     if (error.status === 401) {
       return {
         statusCode: 401,
         headers,
         body: JSON.stringify({
           error: "Invalid API key. Please check your GROQ_API_KEY.",
+        }),
+      };
+    }
+
+    if (error.status === 429) {
+      return {
+        statusCode: 429,
+        headers,
+        body: JSON.stringify({
+          error: "Rate limit exceeded. Please try again later.",
         }),
       };
     }
