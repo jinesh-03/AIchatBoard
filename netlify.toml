@@ -13,7 +13,7 @@
 # IMPORTANT: Redirect API requests to functions
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  to = "/.netlify/functions/chat"
   status = 200
   force = true
 
