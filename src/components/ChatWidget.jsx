@@ -61,7 +61,7 @@ function SearchWidget() {
     }
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/.netlify/functions/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -162,7 +162,7 @@ function SearchWidget() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/.netlify/functions/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -401,7 +401,7 @@ function MiniChatWidget() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/.netlify/functions/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -546,7 +546,7 @@ function QuickActionsWidget() {
     setIsLoading(true);
     setResponse("");
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/.netlify/functions/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -619,7 +619,7 @@ function AssistantCard() {
     if (!prompt.trim()) return;
     setIsLoading(true);
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/.netlify/functions/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

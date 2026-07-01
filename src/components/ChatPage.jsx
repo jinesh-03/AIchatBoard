@@ -92,7 +92,7 @@ export default function ChatPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/.netlify/functions/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
